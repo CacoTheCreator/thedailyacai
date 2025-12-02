@@ -82,6 +82,11 @@ export const BowlBuilder = () => {
     return acc;
   }, {} as Record<string, typeof toppingsOptions>);
 
+  const scrollToBowls = () => {
+    const bowlSection = document.getElementById('bowl-selection');
+    bowlSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary to-background">
       {/* Hero Section */}
@@ -89,36 +94,34 @@ export const BowlBuilder = () => {
         <div className="absolute inset-0 bg-gradient-primary opacity-10"></div>
         <div className="container mx-auto px-4 py-16 md:py-24 relative">
           <div className="text-center max-w-4xl mx-auto animate-fade-in">
-            <Badge className="mb-4 bg-yellow text-yellow-foreground hover:bg-yellow/90 text-sm px-4 py-1">
-              Con Nativo Açaí
+            <Badge className="mb-4 bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-4 py-1">
+              ✺ Hecho con Nativo Açaí
             </Badge>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-              The Daily Grind by Jeró
+              Esto es café, fruta y un poco de arte.
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-              Crea tu bowl de açaí perfecto
+            <p className="text-xl md:text-2xl text-foreground/80 mb-8 max-w-2xl mx-auto">
+              Bowls personalizables con Açaí Nativo. Pedido desde tu celular.
             </p>
-            <div className="inline-block mb-6 px-6 py-3 bg-yellow/20 border-2 border-yellow rounded-lg animate-pulse">
-              <p className="text-lg font-bold text-yellow">
-                ¡Descarga nuestra app y obtén 15% de descuento en todos tus bowls!
-              </p>
-            </div>
-            <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-              Personaliza tu experiencia con açaí nativo de la más alta calidad.
-              Elige tu tamaño y tus toppings favoritos para crear algo único.
-            </p>
+            <Button 
+              size="lg"
+              onClick={scrollToBowls}
+              className="bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300 hover:scale-105"
+            >
+              Armar mi bowl
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Bowl Size Selection */}
-      <section className="container mx-auto px-4 py-12">
+      <section id="bowl-selection" className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
             Elige tu tamaño
           </h2>
           <p className="text-center text-muted-foreground mb-12">
-            Cada bowl viene con açaí nativo premium
+            Ese es el único lujo.
           </p>
 
           <div className="grid md:grid-cols-3 gap-6 mb-16">
@@ -179,12 +182,10 @@ export const BowlBuilder = () => {
           {selectedSize && (
             <div className="animate-fade-in">
               <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-                Personaliza con toppings
+                Hay favoritos, hay descubrimientos.
               </h2>
               <p className="text-center text-muted-foreground mb-12">
-                {selectedBowl?.id === "go"
-                  ? "¡Toppings ilimitados incluidos!"
-                  : "Agrega tus favoritos"}
+                Elige tus toppings sin límites.
               </p>
 
               {Object.entries(groupedToppings).map(([category, toppings]) => (
@@ -226,12 +227,12 @@ export const BowlBuilder = () => {
               <Card className="sticky bottom-4 p-6 shadow-hover bg-card/95 backdrop-blur-sm border-primary/20">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="font-bold text-xl mb-1">Tu Bowl Personalizado</h3>
+                    <h3 className="font-bold text-xl mb-1">Tu pedido está casi listo.</h3>
                     <p className="text-sm text-muted-foreground mb-2">
                       {selectedBowl?.name} • {selectedToppings.length} toppings
                     </p>
-                    <Badge className="bg-yellow text-yellow-foreground">
-                      🎉 Descuento app: -15%
+                    <Badge className="bg-accent text-accent-foreground">
+                      ✺ Con Nativo Açaí
                     </Badge>
                   </div>
                   <div className="flex items-center gap-4">
@@ -248,12 +249,17 @@ export const BowlBuilder = () => {
                     </div>
                     <Button
                       size="lg"
-                      className="bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300 hover:scale-105"
+                      disabled
+                      className="bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300 hover:scale-105 animate-pulse"
+                      title="Integración de WhatsApp próximamente"
                     >
-                      Ordenar Ahora
+                      Enviar por WhatsApp
                     </Button>
                   </div>
                 </div>
+                <p className="text-xs text-center text-muted-foreground mt-4">
+                  Lo demás es arte. ✨
+                </p>
               </Card>
             </div>
           )}
