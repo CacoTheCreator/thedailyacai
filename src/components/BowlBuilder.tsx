@@ -94,6 +94,14 @@ export const BowlBuilder = () => {
         <div className="absolute inset-0 bg-gradient-primary opacity-10"></div>
         <div className="container mx-auto px-4 py-16 md:py-24 relative">
           <div className="text-center max-w-4xl mx-auto animate-fade-in">
+            <div className="mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-primary mb-1">
+                The Daily Grind
+              </h2>
+              <p className="text-sm md:text-base text-muted-foreground tracking-wide">
+                By Jeró
+              </p>
+            </div>
             <Badge className="mb-4 bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-4 py-1">
               ✺ Hecho con Nativo Açaí
             </Badge>
