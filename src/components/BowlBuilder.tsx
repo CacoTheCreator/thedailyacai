@@ -60,18 +60,22 @@ const toppingsOptions = [
 export const BowlBuilder = () => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
+  const [lastToggled, setLastToggled] = useState<string | null>(null);
 
   const selectedBowl = bowlSizes.find((bowl) => bowl.id === selectedSize);
   const totalPrice = selectedBowl?.price || 0;
   const originalTotalPrice = selectedBowl?.originalPrice || 0;
   const savings = originalTotalPrice - totalPrice;
+  const isBowlComplete = selectedSize && selectedToppings.length >= 1;
 
   const toggleTopping = (topping: string) => {
+    setLastToggled(topping);
     setSelectedToppings((prev) =>
       prev.includes(topping)
         ? prev.filter((t) => t !== topping)
         : [...prev, topping]
     );
+    setTimeout(() => setLastToggled(null), 300);
   };
 
   const groupedToppings = toppingsOptions.reduce((acc, topping) => {
@@ -102,7 +106,7 @@ export const BowlBuilder = () => {
                 By Jeró
               </p>
             </div>
-            <Badge className="mb-6 bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-4 py-1.5">
+            <Badge className="mb-6 bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-4 py-1.5 badge-glow">
               ✺ Hecho con Nativo Açaí
             </Badge>
             <h1 className="text-5xl md:text-7xl font-display font-bold mb-8 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent leading-tight">
@@ -136,7 +140,7 @@ export const BowlBuilder = () => {
             {bowlSizes.map((bowl, index) => (
               <Card
                 key={bowl.id}
-                className={`relative p-8 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-hover animate-scale-in ${
+                className={`relative p-8 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-hover hover:-translate-y-0.5 animate-scale-in ${
                   selectedSize === bowl.id
                     ? "ring-2 ring-primary shadow-soft bg-primary-light/10"
                     : "hover:border-primary/30"
@@ -188,7 +192,7 @@ export const BowlBuilder = () => {
 
           {/* Toppings Selection */}
           {selectedSize && (
-            <div className="animate-fade-in">
+            <div className="animate-slide-up">
               <h2 className="text-4xl md:text-5xl font-display font-bold text-center mb-6 tracking-tight">
                 Tus toppings.
               </h2>
@@ -196,8 +200,12 @@ export const BowlBuilder = () => {
                 Sin límites.
               </p>
 
-              {Object.entries(groupedToppings).map(([category, toppings]) => (
-                <div key={category} className="mb-12">
+              {Object.entries(groupedToppings).map(([category, toppings], categoryIndex) => (
+                <div 
+                  key={category} 
+                  className="mb-12 animate-slide-up"
+                  style={{ animationDelay: `${categoryIndex * 0.1}s` }}
+                >
                   <h3 className="text-xl font-display font-semibold mb-6 flex items-center gap-3 tracking-tight">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                     {category}
@@ -213,14 +221,14 @@ export const BowlBuilder = () => {
                             isSelected
                               ? "bg-gradient-primary text-primary-foreground shadow-soft"
                               : "hover:border-primary/40 hover:shadow-soft"
-                          }`}
+                          } ${lastToggled === topping.name ? "animate-soft-pop" : ""}`}
                           onClick={() => toggleTopping(topping.name)}
                         >
                           <span className="flex items-center gap-2">
                             {isSelected ? (
-                              <Minus className="w-4 h-4" />
+                              <Minus className={`w-4 h-4 transition-transform duration-200 ${lastToggled === topping.name ? "rotate-90" : ""}`} />
                             ) : (
-                              <Plus className="w-4 h-4" />
+                              <Plus className={`w-4 h-4 transition-transform duration-200 ${lastToggled === topping.name ? "rotate-90" : ""}`} />
                             )}
                             {topping.name}
                           </span>
@@ -232,14 +240,26 @@ export const BowlBuilder = () => {
               ))}
 
               {/* Order Summary */}
-              <Card className="sticky bottom-4 p-8 shadow-soft bg-card/95 backdrop-blur-sm border-primary/10">
+              <Card className={`sticky bottom-4 p-8 shadow-soft bg-card/95 backdrop-blur-sm border-primary/10 transition-all duration-500 ${
+                isBowlComplete ? "ring-1 ring-primary/20 animate-soft-glow" : ""
+              }`}>
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="flex-1">
-                    <h3 className="font-display font-bold text-2xl mb-2 tracking-tight">Listo.</h3>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="font-display font-bold text-2xl tracking-tight">Listo.</h3>
+                      {isBowlComplete && (
+                        <div className="flex items-center gap-2 text-primary animate-check-in">
+                          <Check className="w-4 h-4" />
+                          <span className="text-sm font-medium">Listo para enviar</span>
+                        </div>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground mb-3 font-light">
-                      {selectedBowl?.name} • {selectedToppings.length} toppings
+                      <span className={`transition-all duration-300 ${selectedToppings.length > 0 ? "text-primary font-medium" : ""}`}>
+                        {selectedBowl?.name} • {selectedToppings.length} toppings
+                      </span>
                     </p>
-                    <Badge className="bg-accent text-accent-foreground text-xs">
+                    <Badge className="bg-accent text-accent-foreground text-xs badge-glow">
                       ✺ Con Nativo Açaí
                     </Badge>
                   </div>
@@ -257,9 +277,13 @@ export const BowlBuilder = () => {
                     </div>
                     <Button
                       size="lg"
-                      disabled
-                      className="bg-gradient-primary text-primary-foreground hover:shadow-soft transition-all duration-300 ease-in-out"
-                      title="Integración de WhatsApp próximamente"
+                      disabled={!isBowlComplete}
+                      className={`bg-gradient-primary text-primary-foreground transition-all duration-500 ease-in-out ${
+                        isBowlComplete 
+                          ? "opacity-100 translate-y-0 hover:shadow-soft" 
+                          : "opacity-50 translate-y-1"
+                      }`}
+                      title={isBowlComplete ? "Integración de WhatsApp próximamente" : "Selecciona un bowl y al menos un topping"}
                     >
                       Enviar por WhatsApp
                     </Button>

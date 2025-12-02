@@ -110,4 +110,9 @@ All colors MUST be HSL.
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-tight;
   }
+
+  .badge-glow:hover {
+    box-shadow: 0 0 12px rgba(147, 51, 234, 0.2);
+    transition: box-shadow 0.3s ease-in-out;
+  }
 }
