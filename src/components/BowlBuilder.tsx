@@ -50,17 +50,17 @@ interface Topping {
 }
 
 const toppingsOptions: Topping[] = [
-  { name: "Granola crunchy sin azúcar", category: "🥣 Crunch", emoji: "🌟" },
+  { name: "Granola crunchy sin azúcar", category: "🥣 Crunch" },
   { name: "Granola avena miel", category: "🥣 Crunch" },
   { name: "Cacao nibs", category: "🥣 Crunch" },
-  { name: "Banana", category: "🍓 Frutas", emoji: "🌟" },
-  { name: "Frutilla", category: "🍓 Frutas", emoji: "🌟" },
+  { name: "Banana", category: "🍓 Frutas" },
+  { name: "Frutilla", category: "🍓 Frutas" },
   { name: "Arándanos", category: "🍓 Frutas" },
   { name: "Mango", category: "🍓 Frutas" },
   { name: "Kiwi", category: "🍓 Frutas" },
   { name: "Piña", category: "🍓 Frutas" },
   { name: "Miel", category: "🍬 Dulces Naturales" },
-  { name: "Mantequilla de maní", category: "🍬 Dulces Naturales", emoji: "🌟" },
+  { name: "Mantequilla de maní", category: "🍬 Dulces Naturales" },
   { name: "Mantequilla de pistachos", category: "🍬 Dulces Naturales" },
 ];
 
@@ -230,12 +230,7 @@ export const BowlBuilder = () => {
                           } ${lastToggled === topping.name ? "animate-pulse" : ""}`}
                           onClick={() => toggleTopping(topping.name)}
                         >
-                          <span className="flex items-center gap-2 w-full">
-                            <span className="flex-1">{topping.name}</span>
-                            {topping.emoji && (
-                              <span className="text-xs">{topping.emoji}</span>
-                            )}
-                          </span>
+                          <span className="flex-1">{topping.name}</span>
                         </Button>
                       );
                     })}
