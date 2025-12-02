@@ -234,38 +234,180 @@ Each brief is a technical specification for a feature implementation. Briefs mai
 
 ---
 
-## BRIEF-001: WhatsApp Order Integration
+## BRIEF-001: Toeat API Documentation & Integration Research
 
 ### Context
-Enable customers to send their customized bowl order directly to the business via WhatsApp. The button currently exists but is disabled with the message "Integracion de WhatsApp proximamente".
+Research and document the Toeat API to enable dynamic product inventory management. The goal is to connect the Daily Acai bowl builder to Toeat's POS system to query real-time stock availability and dynamically populate products (bowl sizes and toppings) based on what's actually available in inventory.
 
 ### Timeline
 | Date | Event | Notes |
 |------|-------|-------|
-| 2025-12-01 | Created | Initial brief during codebase analysis |
+| 2025-12-02 | Created | Initial API research using Perplexity |
+| 2025-12-02 | Research Completed | Comprehensive Toeat API documentation gathered |
 
 ### Learnings
-- WhatsApp Business API or simple wa.me links can be used
-- Order data needs to be formatted as a message string
-- Button component already exists in BowlBuilder.tsx (line ~280)
+
+#### Platform Overview
+- **Toeat** is a cloud-based POS system for gastronomic businesses (restaurants, cafeterias, bakeries, etc.)
+- Includes unified order management, kitchen display system (KDS), inventory tracking, and real-time analytics
+- Official Developer Portal: **developers.toteat.com**
+- API follows REST principles with JSON data format
+
+#### Authentication
+- Uses **OAuth 2.0-style** authentication
+- Requires **Client ID** and **Client Secret** (obtained through account management)
+- Authentication returns **access tokens** with limited validity
+- Tokens must be included in Authorization HTTP header for all requests
+- Configuration requires: **Token**, **Restaurant ID**, **Local ID**
+
+#### Key API Endpoints
+
+**Menu & Product Information:**
+- Retrieve restaurant menu structure
+- Product data includes: GUID, name, description, categories, pricing, availability, modifiers/variants
+- Enables third-party platforms to display accurate product information
+
+**Inventory & Stock Management:**
+- **GET /inventory** - Retrieve real-time stock status
+- Returns `MenuItemInventory` objects with:
+  - Product GUID (globally unique identifier)
+  - Stock status: `IN_STOCK`, `QUANTITY` (limited), `OUT_OF_STOCK`
+  - Quantity values when applicable
+- **Two inventory levels:**
+  - **Basic Inventory:** POS-level tracking (included in all plans)
+  - **Advanced Inventory:** Ingredient-level, recipe management, supplier tracking (premium feature)
+
+**Sales & Revenue:**
+- Retrieve sales data for specified periods
+- Revenue collection by date, payment method breakdowns
+- Transaction-level financial data
+
+**Order Management:**
+- **POST /orders** - Create/load orders from external systems
+- Order status updates and retrieval
+- Accepts standardized JSON format
+- Validates order information before processing
+
+**Operational Endpoints:**
+- **GET /shiftstatus** - Query current shift operational state
+- Determine if orders should be accepted
+- Webhook support for real-time shift status notifications
+
+#### API Structure
+- **Base URL:** Configured in General settings tab
+- **HTTP Methods:** GET (read), POST/PUT/PATCH/DELETE (write)
+- **Response Format:** JSON with pagination for large datasets
+- **Error Codes:** Standard HTTP status codes (200 = success, 400 = client error, 500 = server error)
+
+#### Integration Configuration
+Setup requires 5 configuration tabs:
+1. **General:** Base URL, foundational settings
+2. **Orders:** Order transmission parameters
+3. **Products:** Product information transmission (default codes vs custom identifiers)
+4. **Integrator Information:** External service provider details
+5. **Security:** Authentication tokens and credentials
+
+#### Webhooks
+- Real-time event notifications (alternative to polling)
+- Event categories: partner events, operational events
+- Webhook payload includes: timestamp (ISO 8601), event type, detailed info
+- Retry mechanisms for failed deliveries
+- Receivers must acknowledge within ~15 seconds
+
+#### Security Best Practices
+- All communications over **HTTPS with TLS 1.3**
+- Credentials must NOT be hardcoded or in version control
+- Use environment variables or secure vaults
+- Rate limiting applies (HTTP 429 when exceeded)
+- Zero-trust architecture: verify every request
+
+#### Existing Integrations
+Toeat integrates with:
+- **Delivery:** Rappi, Uber Eats, Uber Direct, Pedidos Ya, Mercat, Justo
+- **Payment:** Transbank, Stripe, Klap
+- **Accounting/ERP:** SAP, Defontana, Siigo
+- **E-invoicing:** Dispapeles (DIAN compliance)
 
 ### Changes
-- None yet
+- None yet (documentation phase)
 
 ### Tasks
-#### Pending
-- [ ] Define WhatsApp number for orders
-- [ ] Create order message formatter function
-- [ ] Implement wa.me link generation
-- [ ] Add UTM tracking parameters
-- [ ] Test on mobile and desktop
-- [ ] Remove "proximamente" text and enable button
+
+#### Completed
+- [x] Research Toeat API documentation
+- [x] Document authentication mechanisms
+- [x] Document inventory endpoints
+- [x] Document product/menu endpoints
+- [x] Document API structure and conventions
+- [x] Document security requirements
 
 #### In Progress
 - None
 
-#### Completed
-- [x] Identify integration point in codebase
+#### Pending
+- [ ] Access Toeat developer portal (developers.toteat.com) directly
+- [ ] Obtain API credentials (Client ID, Client Secret, Restaurant ID, Local ID)
+- [ ] Test authentication endpoint
+- [ ] Test inventory status endpoint
+- [ ] Map Toeat product GUIDs to Daily Acai products (bowl sizes, toppings)
+- [ ] Design data transformation layer (Toeat → BowlBuilder format)
+- [ ] Create API service layer in codebase (`src/services/toeat-api.ts`)
+- [ ] Implement error handling and retry logic
+- [ ] Add rate limiting protection
+- [ ] Document API integration in codebase
+
+### API Endpoint Reference (For Implementation)
+
+```typescript
+// Authentication
+POST /auth/token
+Body: { client_id, client_secret }
+Response: { access_token, expires_in }
+
+// Inventory Status
+GET /api/inventory
+Headers: { Authorization: "Bearer {token}" }
+Response: {
+  items: [
+    {
+      guid: "string",
+      status: "IN_STOCK" | "QUANTITY" | "OUT_OF_STOCK",
+      quantity?: number
+    }
+  ]
+}
+
+// Menu/Products
+GET /api/products
+Headers: { Authorization: "Bearer {token}" }
+Response: {
+  products: [
+    {
+      guid: "string",
+      name: "string",
+      category: "string",
+      price: number,
+      availability: boolean,
+      modifiers: []
+    }
+  ]
+}
+
+// Shift Status
+GET /api/shiftstatus
+Headers: { Authorization: "Bearer {token}" }
+Response: {
+  is_open: boolean,
+  shift_id: "string",
+  started_at: "ISO8601"
+}
+```
+
+### Next Steps
+1. **Access developers.toteat.com** to verify endpoint URLs
+2. **Coordinate with Nativo Acai** to obtain API credentials
+3. **Create mapping document** between Toeat products and Daily Acai UI
+4. **Implement BRIEF-002** (Backend API Integration) using Toeat endpoints
 
 ---
 
@@ -380,6 +522,42 @@ Ongoing UI/UX refinements based on user feedback and best practices.
 
 ---
 
+## BRIEF-005: WhatsApp Order Integration
+
+### Context
+Enable customers to send their customized bowl order directly to the business via WhatsApp. The button currently exists but is disabled with the message "Integracion de WhatsApp proximamente".
+
+### Timeline
+| Date | Event | Notes |
+|------|-------|-------|
+| 2025-12-01 | Created | Initial brief during codebase analysis |
+| 2025-12-02 | Moved | Renumbered from BRIEF-001 to BRIEF-005 |
+
+### Learnings
+- WhatsApp Business API or simple wa.me links can be used
+- Order data needs to be formatted as a message string
+- Button component already exists in BowlBuilder.tsx (line ~280)
+
+### Changes
+- None yet
+
+### Tasks
+#### Pending
+- [ ] Define WhatsApp number for orders
+- [ ] Create order message formatter function
+- [ ] Implement wa.me link generation
+- [ ] Add UTM tracking parameters
+- [ ] Test on mobile and desktop
+- [ ] Remove "proximamente" text and enable button
+
+#### In Progress
+- None
+
+#### Completed
+- [x] Identify integration point in codebase
+
+---
+
 ## Lovable Prompts Guide
 
 ### How to Use These Prompts
@@ -409,47 +587,67 @@ Acceptance Criteria:
 
 ## Next Steps Prompts for Lovable
 
-### PROMPT-001: WhatsApp Integration
+### PROMPT-001: Toeat API Service Layer
 ```
-[BRIEF-001] WhatsApp Order Integration
+[BRIEF-001] Toeat API Service Layer Implementation
 
-Context: We need to enable the WhatsApp order button that's currently
-disabled in BowlBuilder.tsx. When clicked, it should open WhatsApp
-with a pre-formatted order message.
+Context: Create the foundational API service layer to connect with Toeat's
+POS system for real-time inventory and product data. This is the first step
+before implementing dynamic product loading.
+
+Prerequisites:
+- API credentials obtained from Nativo Acai (Client ID, Client Secret, Restaurant ID)
+- Access to developers.toteat.com verified
 
 Implementation:
-1. Create a function formatOrderMessage() that generates a readable
-   order summary including:
-   - Selected bowl size and price
-   - All selected toppings grouped by category
-   - Total price and savings
-   - Customer-friendly formatting with emojis
+1. Create environment variable structure:
+   - Add `.env.local` to .gitignore if not already
+   - Define variables:
+     - VITE_TOEAT_CLIENT_ID
+     - VITE_TOEAT_CLIENT_SECRET
+     - VITE_TOEAT_RESTAURANT_ID
+     - VITE_TOEAT_LOCAL_ID
+     - VITE_TOEAT_API_BASE_URL
 
-2. Create a function generateWhatsAppLink(message, phoneNumber) that:
-   - URL-encodes the message
-   - Returns a wa.me link with the phone number and message
-   - Phone number format: 56XXXXXXXXX (Chile)
+2. Create `src/services/toeat-api.ts`:
+   - Implement OAuth 2.0 authentication
+   - Create token management (store, refresh)
+   - Implement rate limiting protection
+   - Add retry logic with exponential backoff
+   - Create typed response interfaces
 
-3. Update the order button in the Order Summary section:
-   - Remove disabled state
-   - Remove "proximamente" text
-   - Add onClick handler that opens WhatsApp link
-   - Change button text to "Pedir por WhatsApp"
+3. Create API methods:
+   - `authenticate()` - Get access token
+   - `getInventoryStatus()` - Fetch current stock levels
+   - `getProducts()` - Fetch menu/product catalog
+   - `getShiftStatus()` - Check if orders can be accepted
 
-4. Add the WhatsApp phone number as a constant at the top of
-   BowlBuilder.tsx (to be provided)
+4. Create TypeScript interfaces:
+   - ToteatAuthResponse
+   - ToteatInventoryItem
+   - ToteatProduct
+   - ToteatShiftStatus
+
+5. Add error handling:
+   - Network errors
+   - Authentication failures
+   - Rate limit exceeded (429)
+   - Server errors (500+)
 
 Technical Details:
-- Use window.open() with _blank target for the WhatsApp link
-- Format: https://wa.me/56XXXXXXXXX?text=ENCODED_MESSAGE
-- Include line breaks (%0A) in the message for readability
+- Use axios or fetch for HTTP requests
+- Store tokens in memory (not localStorage for security)
+- Implement token auto-refresh before expiration
+- All requests over HTTPS
+- Add request/response logging in development mode
 
 Acceptance Criteria:
-- [ ] Button is enabled when bowl is complete (size + topping selected)
-- [ ] Clicking opens WhatsApp with correct phone number
-- [ ] Message includes all order details in readable format
-- [ ] Works on both mobile (opens WhatsApp app) and desktop (opens web)
-- [ ] Message is in Spanish
+- [ ] Authentication successfully obtains access token
+- [ ] Token refresh works automatically
+- [ ] Rate limiting protection prevents 429 errors
+- [ ] All API methods have TypeScript types
+- [ ] Error handling covers all common scenarios
+- [ ] No credentials in source code or git history
 ```
 
 ### PROMPT-002: Loading States
@@ -629,6 +827,49 @@ Acceptance Criteria:
 - [ ] Clear price breakdown in order summary
 ```
 
+### PROMPT-006: WhatsApp Integration
+```
+[BRIEF-005] WhatsApp Order Integration
+
+Context: We need to enable the WhatsApp order button that's currently
+disabled in BowlBuilder.tsx. When clicked, it should open WhatsApp
+with a pre-formatted order message.
+
+Implementation:
+1. Create a function formatOrderMessage() that generates a readable
+   order summary including:
+   - Selected bowl size and price
+   - All selected toppings grouped by category
+   - Total price and savings
+   - Customer-friendly formatting with emojis
+
+2. Create a function generateWhatsAppLink(message, phoneNumber) that:
+   - URL-encodes the message
+   - Returns a wa.me link with the phone number and message
+   - Phone number format: 56XXXXXXXXX (Chile)
+
+3. Update the order button in the Order Summary section:
+   - Remove disabled state
+   - Remove "proximamente" text
+   - Add onClick handler that opens WhatsApp link
+   - Change button text to "Pedir por WhatsApp"
+
+4. Add the WhatsApp phone number as a constant at the top of
+   BowlBuilder.tsx (to be provided)
+
+Technical Details:
+- Use window.open() with _blank target for the WhatsApp link
+- Format: https://wa.me/56XXXXXXXXX?text=ENCODED_MESSAGE
+- Include line breaks (%0A) in the message for readability
+
+Acceptance Criteria:
+- [ ] Button is enabled when bowl is complete (size + topping selected)
+- [ ] Clicking opens WhatsApp with correct phone number
+- [ ] Message includes all order details in readable format
+- [ ] Works on both mobile (opens WhatsApp app) and desktop (opens web)
+- [ ] Message is in Spanish
+```
+
 ---
 
 ## Session Continuity Guidelines
@@ -684,5 +925,5 @@ Continuing from BRIEF-XXX:
 
 ---
 
-*Last Updated: 2025-12-01*
-*Version: 1.0.0*
+*Last Updated: 2025-12-02*
+*Version: 1.1.0*
