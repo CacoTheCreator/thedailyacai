@@ -342,7 +342,22 @@ Toeat integrates with:
 - [x] Document security requirements
 
 #### In Progress
-- None
+- [ ] Test authentication with real credentials
+- [ ] Obtain real product GUIDs from Toeat
+- [ ] Update PRODUCT_MAPPINGS with real GUIDs
+
+#### Completed
+- [x] Create API service layer (`src/services/toeat-api.ts`)
+- [x] Create TypeScript types (`src/types/toeat.ts`)
+- [x] Create product mappings config (`src/config/toeat-mappings.ts`)
+- [x] Update BowlBuilder to load dynamic data
+- [x] Implement error handling and retry logic
+- [x] Add rate limiting protection
+- [x] Add loading states with skeletons
+- [x] Add store closed state handling
+- [x] Implement 2-minute auto-refresh
+- [x] Add fallback to default data on error
+- [x] Document API integration in codebase
 
 #### Pending
 - [ ] Access Toeat developer portal (developers.toteat.com) directly
