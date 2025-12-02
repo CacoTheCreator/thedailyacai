@@ -8,6 +8,7 @@ interface BowlSize {
   id: string;
   name: string;
   size: string;
+  originalPrice: number;
   price: number;
   description: string;
   popular?: boolean;
@@ -18,6 +19,7 @@ const bowlSizes: BowlSize[] = [
     id: "go",
     name: "Go 10/10",
     size: "290 ml",
+    originalPrice: 6500,
     price: 5500,
     description: "Toppings infinitos",
   },
@@ -25,6 +27,7 @@ const bowlSizes: BowlSize[] = [
     id: "tipico",
     name: "Típico",
     size: "350 ml",
+    originalPrice: 7600,
     price: 6500,
     description: "El equilibrio perfecto",
     popular: true,
@@ -33,6 +36,7 @@ const bowlSizes: BowlSize[] = [
     id: "clasico",
     name: "Bowl Clásico de la Suerte",
     size: "420 ml",
+    originalPrice: 9100,
     price: 7700,
     description: "Máxima indulgencia",
   },
@@ -59,6 +63,8 @@ export const BowlBuilder = () => {
 
   const selectedBowl = bowlSizes.find((bowl) => bowl.id === selectedSize);
   const totalPrice = selectedBowl?.price || 0;
+  const originalTotalPrice = selectedBowl?.originalPrice || 0;
+  const savings = originalTotalPrice - totalPrice;
 
   const toggleTopping = (topping: string) => {
     setSelectedToppings((prev) =>
@@ -92,6 +98,11 @@ export const BowlBuilder = () => {
             <p className="text-xl md:text-2xl text-muted-foreground mb-8">
               Crea tu bowl de açaí perfecto
             </p>
+            <div className="inline-block mb-6 px-6 py-3 bg-yellow/20 border-2 border-yellow rounded-lg animate-pulse">
+              <p className="text-lg font-bold text-yellow">
+                ¡Descarga nuestra app y obtén 15% de descuento en todos tus bowls!
+              </p>
+            </div>
             <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
               Personaliza tu experiencia con açaí nativo de la más alta calidad.
               Elige tu tamaño y tus toppings favoritos para crear algo único.
@@ -128,6 +139,10 @@ export const BowlBuilder = () => {
                   </Badge>
                 )}
                 
+                <Badge className="absolute -top-3 right-4 bg-yellow text-yellow-foreground animate-pulse">
+                  🎉 -15% con App
+                </Badge>
+                
                 <div className="text-center">
                   <div className="mb-4">
                     <div className="w-20 h-20 mx-auto rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-2xl font-bold mb-3">
@@ -140,8 +155,13 @@ export const BowlBuilder = () => {
                     </p>
                   </div>
                   
-                  <div className="text-3xl font-bold text-primary mb-4">
-                    ${bowl.price.toLocaleString("es-CL")}
+                  <div className="mb-4">
+                    <p className="text-lg text-muted-foreground line-through mb-1">
+                      ${bowl.originalPrice.toLocaleString("es-CL")}
+                    </p>
+                    <p className="text-3xl font-bold text-primary">
+                      ${bowl.price.toLocaleString("es-CL")}
+                    </p>
                   </div>
 
                   {selectedSize === bowl.id && (
@@ -205,15 +225,23 @@ export const BowlBuilder = () => {
               {/* Order Summary */}
               <Card className="sticky bottom-4 p-6 shadow-hover bg-card/95 backdrop-blur-sm border-primary/20">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div>
+                  <div className="flex-1">
                     <h3 className="font-bold text-xl mb-1">Tu Bowl Personalizado</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground mb-2">
                       {selectedBowl?.name} • {selectedToppings.length} toppings
                     </p>
+                    <Badge className="bg-yellow text-yellow-foreground">
+                      🎉 Descuento app: -15%
+                    </Badge>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Total</p>
+                      <p className="text-sm text-muted-foreground line-through">
+                        ${originalTotalPrice.toLocaleString("es-CL")} CLP
+                      </p>
+                      <p className="text-sm text-accent font-medium">
+                        Ahorras ${savings.toLocaleString("es-CL")}
+                      </p>
                       <p className="text-3xl font-bold text-primary">
                         ${totalPrice.toLocaleString("es-CL")} CLP
                       </p>
