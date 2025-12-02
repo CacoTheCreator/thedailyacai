@@ -17,22 +17,22 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 210 17% 20%;
 
-    /* Celeste/Cyan vibrante como color principal */
-    --primary: 187 100% 42%;
+    /* Celeste más apagado - editorial */
+    --primary: 187 70% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 187 100% 85%;
-    --primary-dark: 187 100% 30%;
+    --primary-light: 187 70% 85%;
+    --primary-dark: 187 70% 30%;
 
-    /* Secundario - Celeste más claro */
-    --secondary: 187 70% 95%;
-    --secondary-foreground: 187 100% 25%;
+    /* Secundario - Celeste muy claro */
+    --secondary: 187 50% 95%;
+    --secondary-foreground: 187 70% 30%;
 
-    /* Morado accent de Nativo Açaí */
-    --accent: 270 60% 65%;
+    /* Morado profundo - accent silencioso */
+    --accent: 270 40% 50%;
     --accent-foreground: 0 0% 100%;
 
-    /* Amarillo accent de Nativo Açaí */
-    --yellow: 48 100% 60%;
+    /* Amarillo para microdetalles */
+    --yellow: 48 80% 55%;
     --yellow-foreground: 210 17% 20%;
 
     --muted: 187 30% 96%;
@@ -47,19 +47,18 @@ All colors MUST be HSL.
 
     --radius: 1rem;
 
-    /* Gradientes personalizados */
-    --gradient-primary: linear-gradient(135deg, hsl(187, 100%, 42%), hsl(187, 100%, 52%));
-    --gradient-accent: linear-gradient(135deg, hsl(270, 60%, 65%), hsl(187, 100%, 42%));
-    --gradient-tropical: linear-gradient(135deg, hsl(187, 100%, 85%), hsl(48, 100%, 85%), hsl(270, 60%, 85%));
+    /* Gradientes sutiles */
+    --gradient-primary: linear-gradient(135deg, hsl(187, 70%, 45%), hsl(187, 70%, 50%));
+    --gradient-accent: linear-gradient(135deg, hsl(270, 40%, 50%), hsl(187, 70%, 45%));
+    --gradient-tropical: linear-gradient(135deg, hsl(187, 70%, 85%), hsl(48, 80%, 85%), hsl(270, 40%, 85%));
     
-    /* Sombras personalizadas */
-    --shadow-soft: 0 4px 20px rgba(0, 188, 212, 0.15);
-    --shadow-hover: 0 8px 30px rgba(0, 188, 212, 0.25);
-    --shadow-glow: 0 0 40px rgba(0, 188, 212, 0.3);
+    /* Sombras sutiles */
+    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.12);
+    --shadow-glow: 0 0 30px rgba(0, 188, 212, 0.15);
     
-    /* Transiciones */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* Transiciones suaves */
+    --transition-smooth: all 0.25s ease-in-out;
   }
 
   .dark {
@@ -104,6 +103,11 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
   }
 }
