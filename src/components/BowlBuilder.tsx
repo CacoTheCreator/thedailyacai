@@ -42,19 +42,26 @@ const bowlSizes: BowlSize[] = [
   },
 ];
 
-const toppingsOptions = [
-  { name: "Granola", category: "Crunch" },
-  { name: "Coco rallado", category: "Crunch" },
-  { name: "Almendras", category: "Crunch" },
-  { name: "Nueces", category: "Crunch" },
-  { name: "Banana", category: "Frutas" },
-  { name: "Frutilla", category: "Frutas" },
-  { name: "Arándanos", category: "Frutas" },
-  { name: "Kiwi", category: "Frutas" },
-  { name: "Mango", category: "Frutas" },
-  { name: "Miel", category: "Dulces" },
-  { name: "Mantequilla de maní", category: "Dulces" },
-  { name: "Nutella", category: "Dulces" },
+interface Topping {
+  name: string;
+  category: string;
+  popular?: boolean;
+  emoji?: string;
+}
+
+const toppingsOptions: Topping[] = [
+  { name: "Granola crunchy sin azúcar", category: "🥣 Crunch", emoji: "🌟" },
+  { name: "Granola avena miel", category: "🥣 Crunch" },
+  { name: "Cacao nibs", category: "🥣 Crunch" },
+  { name: "Banana", category: "🍓 Frutas", emoji: "🌟" },
+  { name: "Frutilla", category: "🍓 Frutas", emoji: "🌟" },
+  { name: "Arándanos", category: "🍓 Frutas" },
+  { name: "Mango", category: "🍓 Frutas" },
+  { name: "Kiwi", category: "🍓 Frutas" },
+  { name: "Piña", category: "🍓 Frutas" },
+  { name: "Miel", category: "🍬 Dulces Naturales" },
+  { name: "Mantequilla de maní", category: "🍬 Dulces Naturales", emoji: "🌟" },
+  { name: "Mantequilla de pistachos", category: "🍬 Dulces Naturales" },
 ];
 
 export const BowlBuilder = () => {
@@ -203,34 +210,31 @@ export const BowlBuilder = () => {
               {Object.entries(groupedToppings).map(([category, toppings], categoryIndex) => (
                 <div 
                   key={category} 
-                  className="mb-12 animate-slide-up"
+                  className="mb-16 animate-slide-up"
                   style={{ animationDelay: `${categoryIndex * 0.1}s` }}
                 >
-                  <h3 className="text-xl font-display font-semibold mb-6 flex items-center gap-3 tracking-tight">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                  <h3 className="text-lg font-display font-medium mb-6 tracking-tight text-foreground/90">
                     {category}
                   </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {toppings.map((topping) => {
                       const isSelected = selectedToppings.includes(topping.name);
                       return (
                         <Button
                           key={topping.name}
-                          variant={isSelected ? "default" : "outline"}
-                          className={`h-auto py-4 transition-all duration-300 ease-in-out font-light ${
+                          variant="outline"
+                          className={`min-h-[44px] h-auto py-3 px-4 transition-all duration-300 ease-in-out font-light text-left justify-start ${
                             isSelected
-                              ? "bg-gradient-primary text-primary-foreground shadow-soft"
-                              : "hover:border-primary/40 hover:shadow-soft"
-                          } ${lastToggled === topping.name ? "animate-soft-pop" : ""}`}
+                              ? "bg-[hsl(270,60%,90%)] border-[hsl(270,60%,70%)] text-foreground shadow-sm"
+                              : "bg-background hover:bg-accent/50 hover:border-border"
+                          } ${lastToggled === topping.name ? "animate-pulse" : ""}`}
                           onClick={() => toggleTopping(topping.name)}
                         >
-                          <span className="flex items-center gap-2">
-                            {isSelected ? (
-                              <Minus className={`w-4 h-4 transition-transform duration-200 ${lastToggled === topping.name ? "rotate-90" : ""}`} />
-                            ) : (
-                              <Plus className={`w-4 h-4 transition-transform duration-200 ${lastToggled === topping.name ? "rotate-90" : ""}`} />
+                          <span className="flex items-center gap-2 w-full">
+                            <span className="flex-1">{topping.name}</span>
+                            {topping.emoji && (
+                              <span className="text-xs">{topping.emoji}</span>
                             )}
-                            {topping.name}
                           </span>
                         </Button>
                       );
